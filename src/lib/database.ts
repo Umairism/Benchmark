@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
+import { supabase } from './supabase';
 
-// Browser-based local storage database
-// This replaces Supabase with simple localStorage persistence
+// Hybrid database service that can work with both Supabase and localStorage
 
 interface User {
   id: string;
@@ -74,7 +74,7 @@ const verifyPassword = (password: string, hash: string): boolean => {
   return hashPassword(password) === hash;
 };
 
-class LocalDatabase {
+class HybridDatabase {
   private readonly STORAGE_KEYS = {
     USERS: 'benchmark_users',
     ARTICLES: 'benchmark_articles',
@@ -83,8 +83,26 @@ class LocalDatabase {
     CURRENT_USER: 'benchmark_current_user'
   };
 
+  private isSupabaseAvailable = false;
+
   constructor() {
     this.initializeDatabase();
+    this.checkSupabaseConnection();
+  }
+
+  private async checkSupabaseConnection() {
+    try {
+      const { data } = await supabase.from('users').select('count').limit(1);
+      this.isSupabaseAvailable = data !== null;
+      console.log(`Database mode: ${this.isSupabaseAvailable ? 'Supabase (Online)' : 'localStorage (Offline)'}`);
+    } catch {
+      this.isSupabaseAvailable = false;
+      console.log('Database mode: localStorage (Offline)');
+    }
+  }
+
+  getConnectionStatus(): boolean {
+    return this.isSupabaseAvailable;
   }
 
   private initializeDatabase() {
@@ -326,4 +344,4 @@ class LocalDatabase {
 }
 
 // Create and export a singleton instance
-export const db = new LocalDatabase();
+export const db = new HybridDatabase();

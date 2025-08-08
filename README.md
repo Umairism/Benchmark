@@ -38,7 +38,13 @@ A modern, professional school management platform that brings together educators
 - **Invite-Only Registration** with code validation
 - **Role-Based Access** (Admin/User permissions)
 - **Protected Routes** with elegant access controls
-- **Local Storage Database** for development
+- **Hybrid Database** (Supabase + localStorage fallback)
+
+### 🗄️ **Database Integration**
+- **Supabase Integration** for production-ready online storage
+- **Automatic Fallback** to localStorage when offline
+- **Real-time Sync** between local and cloud data
+- **Professional Schema** with proper relationships and indexes
 
 ### 🎨 **Professional Design**
 - **Modern Color Palette** with gradients and glass morphism
@@ -75,7 +81,7 @@ A modern, professional school management platform that brings together educators
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/benchmark-school-system.git
+   git clone https://github.com/Umairism/benchmark-school-system.git
    cd benchmark-school-system
    ```
 
@@ -84,12 +90,28 @@ A modern, professional school management platform that brings together educators
    npm install
    ```
 
-3. **Start development server**
+3. **Configure Database (Optional)**
+   
+   For **production** with online database:
+   ```bash
+   # Copy environment template
+   cp .env.example .env
+   
+   # Edit .env with your Supabase credentials
+   # See SUPABASE_SETUP.md for detailed instructions
+   ```
+   
+   For **development** (uses localStorage):
+   ```bash
+   # No configuration needed - works offline!
+   ```
+
+4. **Start development server**
    ```bash
    npm run dev
    ```
 
-4. **Open in browser**
+5. **Open in browser**
    ```
    http://localhost:5173
    ```
@@ -163,14 +185,24 @@ src/
 ├── hooks/              # Custom React hooks
 │   └── useAuth.ts      # Authentication hook
 ├── lib/                # Utility libraries
-│   └── database.ts     # Local database implementation
+│   ├── database.ts     # Hybrid database service
+│   └── supabase.ts     # Supabase client configuration
 ├── pages/              # Route components
 │   ├── Home.tsx        # Landing page
 │   ├── Dashboard.tsx   # User dashboard
 │   ├── Confessions.tsx # Community confessions
 │   └── ...
 ├── types/              # TypeScript type definitions
+│   ├── index.ts        # Core type definitions
+│   └── supabase.ts     # Supabase database types
 └── utils/              # Utility functions
+
+supabase/
+└── schema.sql          # Database schema for Supabase
+
+docs/
+├── SUPABASE_SETUP.md   # Supabase configuration guide
+└── GITHUB_SETUP.md     # GitHub deployment guide
 ```
 
 ## 🎨 Design System
