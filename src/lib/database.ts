@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { supabase } from './supabase';
+import { supabase, isSupabaseConfigured } from './supabase';
 
 // Hybrid database service that can work with both Supabase and localStorage
 
@@ -87,11 +87,22 @@ class HybridDatabase {
 
   constructor() {
     this.initializeDatabase();
-    this.checkSupabaseConnection();
+    // Don't await this - let it run in the background
+    this.checkSupabaseConnection().catch(() => {
+      // Silently fail - we'll use localStorage
+      this.isSupabaseAvailable = false;
+    });
   }
 
   private async checkSupabaseConnection() {
     try {
+      // Only check if we have the required environment variables
+      if (!isSupabaseConfigured()) {
+        this.isSupabaseAvailable = false;
+        console.log('Database mode: localStorage (No Supabase credentials)');
+        return;
+      }
+
       const { data } = await supabase.from('users').select('count').limit(1);
       this.isSupabaseAvailable = data !== null;
       console.log(`Database mode: ${this.isSupabaseAvailable ? 'Supabase (Online)' : 'localStorage (Offline)'}`);
