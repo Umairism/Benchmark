@@ -15,12 +15,13 @@ export interface Database {
           email: string
           full_name: string | null
           role: 'admin' | 'user'
-          faculty: string | null
+          subjects: string[] | null
           profile_picture: string | null
           bio: string | null
           likes: string[] | null
           dislikes: string[] | null
           interests: string[] | null
+          social_media: Json | null
           created_at: string
           updated_at: string
         }
@@ -29,12 +30,13 @@ export interface Database {
           email: string
           full_name?: string | null
           role?: 'admin' | 'user'
-          faculty?: string | null
+          subjects?: string[] | null
           profile_picture?: string | null
           bio?: string | null
           likes?: string[] | null
           dislikes?: string[] | null
           interests?: string[] | null
+          social_media?: Json | null
           created_at?: string
           updated_at?: string
         }
@@ -43,12 +45,13 @@ export interface Database {
           email?: string
           full_name?: string | null
           role?: 'admin' | 'user'
-          faculty?: string | null
+          subjects?: string[] | null
           profile_picture?: string | null
           bio?: string | null
           likes?: string[] | null
           dislikes?: string[] | null
           interests?: string[] | null
+          social_media?: Json | null
           created_at?: string
           updated_at?: string
         }

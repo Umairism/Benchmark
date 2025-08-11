@@ -57,7 +57,12 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, featured = false }) 
           </div>
           <div className="flex items-center space-x-1">
             <User className="h-4 w-4" />
-            <span>Anonymous</span>
+            <Link 
+              to={`/user/${article.author_id}`}
+              className="hover:text-blue-600 transition-colors"
+            >
+              {article.author_name}
+            </Link>
           </div>
         </div>
 

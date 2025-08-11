@@ -14,6 +14,7 @@ import CreateArticle from './pages/CreateArticle';
 import AdminPanel from './pages/AdminPanel';
 import Confessions from './pages/Confessions';
 import Profile from './pages/Profile';
+import PublicProfile from './pages/PublicProfile';
 
 function App() {
   const { loading } = useAuth();
@@ -65,6 +66,7 @@ function App() {
                 <Profile />
               </ProtectedRoute>
             } />
+            <Route path="/user/:userId" element={<PublicProfile />} />
             <Route 
               path="/admin" 
               element={

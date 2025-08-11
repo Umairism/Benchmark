@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { db } from '../../lib/database';
 import { MessageCircle, Send, User, Calendar } from 'lucide-react';
@@ -116,9 +117,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-2 mb-2">
-                    <h4 className="text-sm font-medium text-gray-900">
+                    <Link 
+                      to={`/user/${comment.user_id}`}
+                      className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                    >
                       {comment.user_name}
-                    </h4>
+                    </Link>
                     <div className="flex items-center space-x-1 text-xs text-gray-500">
                       <Calendar className="h-3 w-3" />
                       <span>{formatDate(comment.created_at)}</span>

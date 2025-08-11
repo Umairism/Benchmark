@@ -13,7 +13,14 @@ import {
   Save,
   Upload,
   X,
-  Plus
+  Plus,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Github,
+  Youtube,
+  Link as LinkIcon
 } from 'lucide-react';
 import type { User } from '../types';
 
@@ -24,28 +31,69 @@ const Profile: React.FC = () => {
   const [profileData, setProfileData] = useState<Partial<User>>({
     full_name: '',
     email: '',
-    faculty: '',
+    subjects: [],
     bio: '',
     likes: [],
     dislikes: [],
-    interests: []
+    interests: [],
+    social_media: {
+      facebook: '',
+      twitter: '',
+      instagram: '',
+      linkedin: '',
+      github: '',
+      youtube: ''
+    }
   });
   const [newLike, setNewLike] = useState('');
   const [newDislike, setNewDislike] = useState('');
   const [newInterest, setNewInterest] = useState('');
+  const [newSubject, setNewSubject] = useState('');
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string>('');
+
+  // O-Level subjects list
+  const oLevelSubjects = [
+    'English Language',
+    'Mathematics',
+    'Physics',
+    'Chemistry', 
+    'Biology',
+    'Computer Science',
+    'Economics',
+    'Accounting',
+    'Business Studies',
+    'Geography',
+    'History',
+    'Urdu',
+    'Islamiyat',
+    'Pakistan Studies',
+    'Art & Design',
+    'Environmental Management',
+    'Sociology',
+    'Psychology',
+    'Statistics',
+    'Additional Mathematics'
+  ];
 
   useEffect(() => {
     if (user) {
       setProfileData({
         full_name: user.full_name || '',
         email: user.email || '',
-        faculty: user.faculty || '',
+        subjects: user.subjects || [],
         bio: user.bio || '',
         likes: user.likes || [],
         dislikes: user.dislikes || [],
-        interests: user.interests || []
+        interests: user.interests || [],
+        social_media: user.social_media || {
+          facebook: '',
+          twitter: '',
+          instagram: '',
+          linkedin: '',
+          github: '',
+          youtube: ''
+        }
       });
       setPreviewImage(user.profile_picture || '');
     }
@@ -88,7 +136,7 @@ const Profile: React.FC = () => {
     }
   };
 
-  const addItem = (type: 'likes' | 'dislikes' | 'interests', value: string) => {
+  const addItem = (type: 'likes' | 'dislikes' | 'interests' | 'subjects', value: string) => {
     if (!value.trim()) return;
     
     setProfileData(prev => ({
@@ -100,12 +148,23 @@ const Profile: React.FC = () => {
     if (type === 'likes') setNewLike('');
     if (type === 'dislikes') setNewDislike('');
     if (type === 'interests') setNewInterest('');
+    if (type === 'subjects') setNewSubject('');
   };
 
-  const removeItem = (type: 'likes' | 'dislikes' | 'interests', index: number) => {
+  const removeItem = (type: 'likes' | 'dislikes' | 'interests' | 'subjects', index: number) => {
     setProfileData(prev => ({
       ...prev,
       [type]: prev[type]?.filter((_, i) => i !== index) || []
+    }));
+  };
+
+  const handleSocialMediaChange = (platform: string, value: string) => {
+    setProfileData(prev => ({
+      ...prev,
+      social_media: {
+        ...prev.social_media,
+        [platform]: value
+      }
     }));
   };
 
@@ -130,12 +189,13 @@ const Profile: React.FC = () => {
         .from('users')
         .update({
           full_name: profileData.full_name,
-          faculty: profileData.faculty,
+          subjects: profileData.subjects,
           bio: profileData.bio,
           profile_picture: profilePictureUrl,
           likes: profileData.likes,
           dislikes: profileData.dislikes,
           interests: profileData.interests,
+          social_media: profileData.social_media,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
@@ -246,25 +306,50 @@ const Profile: React.FC = () => {
                 <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
               </div>
 
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Faculty/Department
+                  <GraduationCap className="w-4 h-4 inline mr-1" />
+                  O-Level Subjects
                 </label>
-                <select
-                  value={profileData.faculty || ''}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, faculty: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Select Faculty</option>
-                  <option value="Computer Science">Computer Science</option>
-                  <option value="Engineering">Engineering</option>
-                  <option value="Business">Business</option>
-                  <option value="Arts & Sciences">Arts & Sciences</option>
-                  <option value="Medicine">Medicine</option>
-                  <option value="Law">Law</option>
-                  <option value="Education">Education</option>
-                  <option value="Other">Other</option>
-                </select>
+                <div className="space-y-3">
+                  <div className="flex space-x-2">
+                    <select
+                      value={newSubject}
+                      onChange={(e) => setNewSubject(e.target.value)}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Select a subject to add</option>
+                      {oLevelSubjects.filter(subject => !profileData.subjects?.includes(subject)).map(subject => (
+                        <option key={subject} value={subject}>{subject}</option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => addItem('subjects', newSubject)}
+                      disabled={!newSubject}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {profileData.subjects?.map((subject, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+                      >
+                        {subject}
+                        <button
+                          type="button"
+                          onClick={() => removeItem('subjects', index)}
+                          className="ml-2 text-blue-600 hover:text-blue-800"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className="md:col-span-2">
@@ -411,6 +496,94 @@ const Profile: React.FC = () => {
               >
                 <Plus className="w-4 h-4" />
               </button>
+            </div>
+          </div>
+
+          {/* Social Media Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+              <LinkIcon className="w-5 h-5 mr-2 text-blue-500" />
+              Social Media Links
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <Facebook className="w-4 h-4 mr-1 text-blue-600" />
+                  Facebook
+                </label>
+                <input
+                  type="url"
+                  value={profileData.social_media?.facebook || ''}
+                  onChange={(e) => handleSocialMediaChange('facebook', e.target.value)}
+                  placeholder="https://facebook.com/username"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <Twitter className="w-4 h-4 mr-1 text-blue-400" />
+                  Twitter
+                </label>
+                <input
+                  type="url"
+                  value={profileData.social_media?.twitter || ''}
+                  onChange={(e) => handleSocialMediaChange('twitter', e.target.value)}
+                  placeholder="https://twitter.com/username"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <Instagram className="w-4 h-4 mr-1 text-pink-600" />
+                  Instagram
+                </label>
+                <input
+                  type="url"
+                  value={profileData.social_media?.instagram || ''}
+                  onChange={(e) => handleSocialMediaChange('instagram', e.target.value)}
+                  placeholder="https://instagram.com/username"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <Linkedin className="w-4 h-4 mr-1 text-blue-700" />
+                  LinkedIn
+                </label>
+                <input
+                  type="url"
+                  value={profileData.social_media?.linkedin || ''}
+                  onChange={(e) => handleSocialMediaChange('linkedin', e.target.value)}
+                  placeholder="https://linkedin.com/in/username"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <Github className="w-4 h-4 mr-1 text-gray-800" />
+                  GitHub
+                </label>
+                <input
+                  type="url"
+                  value={profileData.social_media?.github || ''}
+                  onChange={(e) => handleSocialMediaChange('github', e.target.value)}
+                  placeholder="https://github.com/username"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <Youtube className="w-4 h-4 mr-1 text-red-600" />
+                  YouTube
+                </label>
+                <input
+                  type="url"
+                  value={profileData.social_media?.youtube || ''}
+                  onChange={(e) => handleSocialMediaChange('youtube', e.target.value)}
+                  placeholder="https://youtube.com/channel/..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
             </div>
           </div>
 
