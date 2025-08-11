@@ -35,7 +35,7 @@ const CreateArticle: React.FC = () => {
         author_name: user.full_name || user.email
       };
 
-      const newArticle = db.createArticle(articleData);
+      const newArticle = await db.createArticle(articleData);
       console.log('Article created:', newArticle); // Debug log
       navigate(`/article/${newArticle.id}`);
     } catch (error) {

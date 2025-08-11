@@ -18,7 +18,7 @@ const Confessions: React.FC = () => {
     
     try {
       // Get all confessions for signed-in users to view
-      const allConfessions = db.getAllConfessions();
+      const allConfessions = await db.getAllConfessions();
       setConfessions(allConfessions);
     } catch (error) {
       console.error('Error fetching confessions:', error);
@@ -37,7 +37,7 @@ const Confessions: React.FC = () => {
 
     setSubmitting(true);
     try {
-      db.createConfession({
+      await db.createConfession({
         user_id: user.id,
         content: newConfession.trim()
       });
@@ -61,7 +61,7 @@ const Confessions: React.FC = () => {
     if (!editingId || !editingContent.trim()) return;
 
     try {
-      db.updateConfession(editingId, {
+      await db.updateConfession(editingId, {
         content: editingContent.trim()
       });
       
@@ -78,7 +78,7 @@ const Confessions: React.FC = () => {
     if (!confirm('Are you sure you want to delete this confession?')) return;
 
     try {
-      db.deleteConfession(id);
+      await db.deleteConfession(id);
       await fetchConfessions();
     } catch (error) {
       console.error('Error deleting confession:', error);

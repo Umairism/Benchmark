@@ -15,7 +15,7 @@ const Articles: React.FC = () => {
 
   const fetchArticles = useCallback(async () => {
     try {
-      const allArticles = db.getPublishedArticles();
+      const allArticles = await db.getPublishedArticles();
       setArticles(allArticles);
     } catch (error) {
       console.error('Error fetching articles:', error);

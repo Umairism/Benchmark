@@ -23,7 +23,7 @@ const Dashboard: React.FC = () => {
     if (!user) return;
 
     try {
-      const allArticles = db.getAllArticles();
+      const allArticles = await db.getAllArticles();
       const userArticles = allArticles
         .filter(article => article.author_id === user.id)
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -40,7 +40,7 @@ const Dashboard: React.FC = () => {
     if (!user) return;
 
     try {
-      const userConfessions = db.getConfessionsByUser(user.id);
+      const userConfessions = await db.getConfessionsByUser(user.id);
       setConfessions(userConfessions.slice(0, 3)); // Get latest 3 confessions for dashboard
     } catch (error) {
       console.error('Error fetching confessions:', error);
@@ -51,10 +51,10 @@ const Dashboard: React.FC = () => {
     if (!user) return;
 
     try {
-      const allArticles = db.getAllArticles();
+      const allArticles = await db.getAllArticles();
       const userArticles = allArticles.filter(article => article.author_id === user.id);
-      const userConfessions = db.getConfessionsByUser(user.id);
-      const allConfessions = db.getAllConfessions();
+      const userConfessions = await db.getConfessionsByUser(user.id);
+      const allConfessions = await db.getAllConfessions();
 
       const total = userArticles.length;
       const published = userArticles.filter(a => a.published).length;
@@ -83,7 +83,7 @@ const Dashboard: React.FC = () => {
 
   const togglePublishStatus = async (articleId: string, currentStatus: boolean) => {
     try {
-      db.updateArticle(articleId, { published: !currentStatus });
+      await db.updateArticle(articleId, { published: !currentStatus });
 
       setArticles(articles.map(article =>
         article.id === articleId
@@ -100,7 +100,7 @@ const Dashboard: React.FC = () => {
     if (!confirm('Are you sure you want to delete this article?')) return;
 
     try {
-      db.deleteArticle(articleId);
+      await db.deleteArticle(articleId);
       setArticles(articles.filter(article => article.id !== articleId));
       fetchUserStats();
     } catch (error) {

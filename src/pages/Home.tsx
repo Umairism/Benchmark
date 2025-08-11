@@ -17,7 +17,7 @@ const Home: React.FC = () => {
   const fetchArticles = async () => {
     try {
       // Fetch all published articles
-      const publishedArticles = db.getPublishedArticles();
+      const publishedArticles = await db.getPublishedArticles();
       
       // Filter featured articles
       const featured = publishedArticles

@@ -20,10 +20,10 @@ const AdminPanel: React.FC = () => {
 
   const fetchAllData = async () => {
     try {
-      // Use local database instead of Supabase
-      const usersData = db.getAllUsers();
-      const articlesData = db.getAllArticles();
-      const commentsData = db.getAllComments();
+      // Use Supabase database
+      const usersData = await db.getAllUsers();
+      const articlesData = await db.getAllArticles();
+      const commentsData = await db.getAllComments();
 
       setUsers(usersData as User[]);
       setArticles(articlesData as Article[]);
@@ -38,8 +38,10 @@ const AdminPanel: React.FC = () => {
   const toggleUserRole = async (userId: string, currentRole: string) => {
     try {
       const newRole = currentRole === 'admin' ? 'user' : 'admin';
-      db.updateUserRole(userId, newRole as 'user' | 'admin');
-      fetchAllData();
+      // For now, disable this functionality as we need admin service
+      console.log('User role update not implemented yet');
+      alert('User role management is not implemented yet.');
+      // fetchAllData();
     } catch (error) {
       console.error('Error updating user role:', error);
     }
@@ -47,7 +49,7 @@ const AdminPanel: React.FC = () => {
 
   const toggleArticleStatus = async (articleId: string, currentStatus: boolean) => {
     try {
-      db.updateArticle(articleId, { published: !currentStatus });
+      await db.updateArticle(articleId, { published: !currentStatus });
       fetchAllData();
     } catch (error) {
       console.error('Error updating article status:', error);
@@ -58,7 +60,7 @@ const AdminPanel: React.FC = () => {
     if (!confirm('Are you sure you want to delete this article?')) return;
 
     try {
-      db.deleteArticle(articleId);
+      await db.deleteArticle(articleId);
       fetchAllData();
     } catch (error) {
       console.error('Error deleting article:', error);
@@ -69,7 +71,7 @@ const AdminPanel: React.FC = () => {
     if (!confirm('Are you sure you want to delete this comment?')) return;
 
     try {
-      db.deleteComment(commentId);
+      await db.deleteComment(commentId);
       fetchAllData();
     } catch (error) {
       console.error('Error deleting comment:', error);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { db } from '../lib/database';
+import { supabase } from '../lib/supabase';
 import type { User } from '../types';
 
 export const useAuth = () => {
@@ -7,153 +7,107 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get current user from local database on app initialization
-    initializeAuth();
+    const getSession = async () => {
+      setLoading(true);
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        // Fetch user profile from users table
+        const { data: profile } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+        if (profile) setUser(profile);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    };
+    getSession();
+    // Listen for auth state changes
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        if (profile) setUser(profile);
+      } else {
+        setUser(null);
+      }
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
   }, []);
 
-  const initializeAuth = () => {
-    try {
-      console.log('Initializing authentication...');
-      const currentUser = db.getCurrentUser();
-      console.log('Current user from database:', currentUser);
-      if (currentUser) {
-        // Convert database user to app user (remove password field)
-        const userForState: User = {
-          id: currentUser.id,
-          email: currentUser.email,
-          full_name: currentUser.full_name,
-          role: currentUser.role,
-          created_at: currentUser.created_at,
-          updated_at: currentUser.updated_at
-        };
-        console.log('Setting initial user state:', userForState);
-        setUser(userForState);
-      } else {
-        console.log('No user found in database');
-      }
-    } catch (error) {
-      console.error('Error initializing auth:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const login = async (email: string, password: string): Promise<User> => {
-    try {
-      console.log('Starting login process for:', email);
-      const authenticatedUser = db.authenticateUser(email, password);
-      console.log('User authenticated:', authenticatedUser);
-      
-      // Convert to User type without password
-      const userForState: User = {
-        id: authenticatedUser.id,
-        email: authenticatedUser.email,
-        full_name: authenticatedUser.full_name,
-        role: authenticatedUser.role,
-        created_at: authenticatedUser.created_at,
-        updated_at: authenticatedUser.updated_at
-      };
-      
-      console.log('Setting user state:', userForState);
-      setUser(userForState);
-      return userForState;
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error || !data.user) throw error || new Error('Login failed');
+    // Fetch user profile
+    const { data: profile } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+    if (!profile) throw new Error('User profile not found');
+    setUser(profile);
+    return profile;
   };
 
   const register = async (email: string, password: string, inviteCode: string, fullName?: string): Promise<User> => {
-    try {
-      console.log('Starting registration process...');
-      const newUser = db.createUser(email, password, inviteCode, fullName);
-      console.log('User created in database:', newUser);
-      
-      // Convert to User type without password
-      const userForState: User = {
-        id: newUser.id,
-        email: newUser.email,
-        full_name: newUser.full_name,
-        role: newUser.role,
-        created_at: newUser.created_at,
-        updated_at: newUser.updated_at
-      };
-      
-      console.log('Setting user state:', userForState);
-      setUser(userForState);
-      
-      // Force re-check after a small delay to ensure state is set
-      setTimeout(() => {
-        console.log('Re-checking auth state after registration...');
-        const currentUser = db.getCurrentUser();
-        console.log('Current user from database:', currentUser);
-        if (currentUser && !user) {
-          console.log('Updating user state from database check');
-          setUser({
-            id: currentUser.id,
-            email: currentUser.email,
-            full_name: currentUser.full_name,
-            role: currentUser.role,
-            created_at: currentUser.created_at,
-            updated_at: currentUser.updated_at
-          });
-        }
-      }, 100);
-      
-      return userForState;
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
-    }
+    if (inviteCode !== 'BENCHMARK2025') throw new Error('Invalid invite code');
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error || !data.user) throw error || new Error('Registration failed');
+    // Insert user profile into users table
+    const { data: profile, error: profileError } = await supabase
+      .from('users')
+      .insert({
+        id: data.user.id,
+        email,
+        full_name: fullName || null,
+        role: 'user',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+    if (profileError || !profile) throw profileError || new Error('Profile creation failed');
+    setUser(profile);
+    return profile;
   };
 
-  const logout = () => {
-    try {
-      db.logout();
-      setUser(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
   };
 
-  const refetchUser = () => {
-    try {
-      console.log('Manually refetching user state...');
-      const currentUser = db.getCurrentUser();
-      console.log('Current user from manual refetch:', currentUser);
-      if (currentUser) {
-        const userForState: User = {
-          id: currentUser.id,
-          email: currentUser.email,
-          full_name: currentUser.full_name,
-          role: currentUser.role,
-          created_at: currentUser.created_at,
-          updated_at: currentUser.updated_at
-        };
-        console.log('Setting user state from manual refetch:', userForState);
-        setUser(userForState);
-      } else {
-        console.log('No user found during manual refetch');
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Error refetching user:', error);
+  const refetchUser = async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data?.user) {
+      const { data: profile } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      if (profile) setUser(profile);
+    } else {
       setUser(null);
     }
   };
 
-  // Force update auth state - useful for debugging
   const forceUpdateAuth = () => {
     refetchUser();
   };
 
-  return { 
-    user, 
-    loading, 
-    login, 
-    register, 
-    logout, 
+  return {
+    user,
+    loading,
+    login,
+    register,
+    logout,
     refetchUser,
-    forceUpdateAuth
+    forceUpdateAuth,
   };
 };

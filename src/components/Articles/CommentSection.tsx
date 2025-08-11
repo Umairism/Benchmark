@@ -32,10 +32,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         content: newComment.trim()
       };
 
-      db.createComment(commentData);
+      await db.createComment(commentData);
       
       // Refresh comments
-      const updatedComments = db.getCommentsByArticle(articleId);
+      const updatedComments = await db.getCommentsByArticle(articleId);
       onCommentsUpdate(updatedComments);
       
       setNewComment('');

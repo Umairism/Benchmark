@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { db } from '../lib/database';
@@ -15,20 +15,13 @@ const ArticleDetail: React.FC = () => {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      fetchArticle();
-      fetchComments();
-    }
-  }, [id]);
-
-  const fetchArticle = async () => {
+  const fetchArticle = useCallback(async () => {
     if (!id) return;
 
     console.log('Fetching article with ID:', id); // Debug log
 
     try {
-      const article = db.getArticleById(id);
+      const article = await db.getArticleById(id);
       console.log('Article found:', article); // Debug log
       
       if (article) {
@@ -48,18 +41,25 @@ const ArticleDetail: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, user]);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     if (!id) return;
 
     try {
-      const articleComments = db.getCommentsByArticle(id);
+      const articleComments = await db.getCommentsByArticle(id);
       setComments(articleComments);
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchArticle();
+      fetchComments();
+    }
+  }, [id, fetchArticle, fetchComments]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
