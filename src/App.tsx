@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { DatabaseStatusBanner } from './components/DatabaseStatusBanner';
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
@@ -31,56 +33,59 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Header />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<AuthForm />} />
-            <Route path="/articles" element={<Articles />} />
-            <Route path="/article/:id" element={<ArticleDetail />} />
-            <Route 
-              path="/dashboard" 
-              element={
+    <ErrorBoundary>
+      <Router>
+        <div className="min-h-screen bg-gray-50 flex flex-col">
+          <Header />
+          <DatabaseStatusBanner />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/auth" element={<AuthForm />} />
+              <Route path="/articles" element={<Articles />} />
+              <Route path="/article/:id" element={<ArticleDetail />} />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/create" 
+                element={
+                  <ProtectedRoute>
+                    <CreateArticle />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route path="/confessions" element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <Confessions />
                 </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/create" 
-              element={
+              } />
+              <Route path="/profile" element={
                 <ProtectedRoute>
-                  <CreateArticle />
+                  <Profile />
                 </ProtectedRoute>
-              } 
-            />
-            <Route path="/confessions" element={
-              <ProtectedRoute>
-                <Confessions />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
-            <Route path="/user/:userId" element={<PublicProfile />} />
-            <Route 
-              path="/admin" 
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminPanel />
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
-        </main>
-        <Footer />
-        <AuthDebugger />
-      </div>
-    </Router>
+              } />
+              <Route path="/user/:userId" element={<PublicProfile />} />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <AdminPanel />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </main>
+          <Footer />
+          <AuthDebugger />
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

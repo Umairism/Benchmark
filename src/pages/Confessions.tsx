@@ -96,13 +96,32 @@ const Confessions: React.FC = () => {
     });
   };
 
+  const [userDisplayNames, setUserDisplayNames] = useState<Record<string, string>>({});
+
   const getUserDisplayName = (userId: string) => {
     if (userId === user?.id) {
       return 'You';
     }
-    const confessionUser = db.getUserById(userId);
-    return confessionUser?.full_name || confessionUser?.email?.split('@')[0] || 'Anonymous';
+    return userDisplayNames[userId] || 'Anonymous';
   };
+
+  useEffect(() => {
+    const fetchDisplayNames = async () => {
+      const ids = Array.from(new Set(confessions.map(c => c.user_id).filter(id => id !== user?.id)));
+      const newDisplayNames: Record<string, string> = {};
+      await Promise.all(ids.map(async (id) => {
+        const confessionUser = await db.getUserById(id);
+        newDisplayNames[id] =
+          confessionUser?.full_name ||
+          confessionUser?.email?.split('@')[0] ||
+          'Anonymous';
+      }));
+      setUserDisplayNames(newDisplayNames);
+    };
+    if (confessions.length > 0) {
+      fetchDisplayNames();
+    }
+  }, [confessions, user]);
 
   const isOwnConfession = (confession: Confession) => {
     return confession.user_id === user?.id;
