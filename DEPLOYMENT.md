@@ -1,111 +1,158 @@
-# 🚀 Deployment Checklist
+# Deployment Guide
 
-This checklist ensures your Benchmark School System is properly configured for production deployment.
+This guide covers deploying the Benchmark Club application to production environments.
 
-## ✅ Pre-Deployment Checklist
+## 🚀 Deployment Options
 
-### **1. Repository Setup**
-- [ ] GitHub repository created and configured
-- [ ] All code committed to main branch
-- [ ] `.env` file excluded from version control
-- [ ] `README.md` updated with project information
-- [ ] License file included
+### Recommended: Netlify + Supabase
 
-### **2. Database Configuration**
-- [ ] Supabase project created
-- [ ] Database schema deployed (`supabase/schema.sql`)
+The recommended deployment stack for Benchmark Club:
+- **Frontend**: Netlify (CDN, CI/CD, Form handling)
+- **Backend**: Supabase (Database, Auth, Storage, APIs)
+
+## 📋 Prerequisites
+
+Before deploying, ensure you have:
+
+- [ ] GitHub repository with your code
+- [ ] Supabase project set up
+- [ ] Netlify account
+- [ ] Domain name (optional)
 - [ ] Environment variables configured
-- [ ] Database connection tested
-- [ ] Row Level Security policies configured (recommended)
 
-### **3. Environment Setup**
-- [ ] `.env` file created from `.env.example`
-- [ ] `VITE_SUPABASE_URL` configured
-- [ ] `VITE_SUPABASE_ANON_KEY` configured
-- [ ] `VITE_APP_MODE` set to 'production'
+## 🔧 Supabase Setup
 
-### **4. Build & Test**
-- [ ] Project builds successfully (`npm run build`)
-- [ ] No TypeScript errors
-- [ ] All tests pass (if applicable)
-- [ ] Application works in production mode
+### 1. Create Supabase Project
 
-### **5. Security Review**
-- [ ] No sensitive data in code
-- [ ] Environment variables properly secured
-- [ ] API keys have appropriate permissions
-- [ ] Database security policies in place
+1. Go to [supabase.com](https://supabase.com)
+2. Create a new project
+3. Note down your project URL and anon key
 
-## 🌐 Deployment Options
+### 2. Database Schema Setup
 
-### **Option 1: Vercel (Recommended)**
-```bash
-# Install Vercel CLI
-npm i -g vercel
+Run the complete schema in your Supabase SQL Editor:
 
-# Deploy to Vercel
-vercel
+```sql
+-- Create users table
+CREATE TABLE users (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  full_name TEXT,
+  role TEXT DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-# Set environment variables in Vercel dashboard
+-- Create articles table
+CREATE TABLE articles (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  excerpt TEXT NOT NULL,
+  category TEXT NOT NULL,
+  author_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  author_name TEXT NOT NULL,
+  published BOOLEAN DEFAULT false,
+  featured BOOLEAN DEFAULT false,
+  image_url TEXT,
+  tags TEXT[] DEFAULT '{}',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create comments table
+CREATE TABLE comments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  article_id UUID REFERENCES articles(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  user_name TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create confessions table
+CREATE TABLE confessions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Add profile fields
+ALTER TABLE users 
+ADD COLUMN subjects TEXT[],
+ADD COLUMN profile_picture TEXT,
+ADD COLUMN bio TEXT,
+ADD COLUMN likes TEXT[],
+ADD COLUMN dislikes TEXT[],
+ADD COLUMN interests TEXT[],
+ADD COLUMN social_media JSONB;
+
+-- Enable RLS and create policies (see full schema in supabase/schema.sql)
 ```
 
-### **Option 2: Netlify**
-```bash
-# Install Netlify CLI
-npm i -g netlify-cli
+### 3. Authentication Setup
 
-# Build and deploy
-npm run build
-netlify deploy --prod --dir=dist
-```
+1. Go to Authentication → Settings
+2. Configure your site URL (your Netlify URL)
+3. Add redirect URLs for production
+4. Enable email authentication
+5. Configure email templates (optional)
 
-### **Option 3: GitHub Pages**
-1. Enable GitHub Pages in repository settings
-2. Configure GitHub Actions for automatic deployment
-3. Set environment variables in GitHub Secrets
+### 4. Storage Setup
 
-### **Option 4: Custom Server**
-```bash
-# Build the project
-npm run build
+1. Go to Storage
+2. Create a `profile-pictures` bucket
+3. Set it to public
+4. Configure storage policies (included in schema)
 
-# Serve the dist folder with any static file server
-# Example with serve:
-npx serve dist
-```
+## 🌐 Netlify Deployment
 
-## 🔧 Environment Variables for Production
+### Method 1: Git-based Deployment (Recommended)
 
-Create these environment variables in your deployment platform:
+1. **Connect Repository**
+   - Go to [netlify.com](https://netlify.com)
+   - Click "New site from Git"
+   - Connect your GitHub account
+   - Select your Benchmark repository
 
-```env
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key-here
-VITE_APP_MODE=production
-```
+2. **Build Settings**
+   ```
+   Build command: npm run build
+   Publish directory: dist
+   ```
 
-## 📊 Post-Deployment Testing
+3. **Environment Variables**
+   Go to Site settings → Environment variables and add:
+   ```
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Deploy**
+   - Click "Deploy site"
+   - Wait for the build to complete
+   - Your site will be available at a random URL
+
+## 📈 Post-Deployment Testing
 
 ### **Functionality Tests**
 - [ ] Homepage loads correctly
-- [ ] User registration works (with invite code)
+- [ ] User registration works
 - [ ] User login/logout functions
 - [ ] Article creation and editing
 - [ ] Comment system works
 - [ ] Confessions feature works
-- [ ] Dashboard displays data correctly
+- [ ] Profile system works
+- [ ] Public profile viewing works
 
 ### **Database Tests**
 - [ ] Data saves to Supabase
-- [ ] Offline mode works (localStorage fallback)
-- [ ] Data syncs properly between online/offline
-- [ ] No data loss during mode switches
-
-### **Performance Tests**
-- [ ] Page load times acceptable
-- [ ] Database queries optimized
-- [ ] Images and assets load quickly
-- [ ] Mobile performance satisfactory
+- [ ] Profile updates work
+- [ ] Image uploads work
+- [ ] Social media links save correctly
 
 ## 🔒 Security Considerations
 
@@ -121,55 +168,32 @@ VITE_APP_MODE=production
 - Implement proper error handling
 - Use HTTPS in production
 
-## 📈 Monitoring & Maintenance
+## 🛠️ Troubleshooting
 
-### **Set Up Monitoring**
-- [ ] Supabase dashboard monitoring
-- [ ] Error tracking (Sentry, LogRocket)
-- [ ] Performance monitoring
-- [ ] Uptime monitoring
+### Common Issues
 
-### **Regular Maintenance**
-- [ ] Dependency updates
-- [ ] Security patches
-- [ ] Database backups
-- [ ] Performance optimizations
+1. **Environment Variables Not Working**
+   - Ensure variables start with `VITE_`
+   - Restart development server after changes
+   - Check Netlify environment variables
 
-## 🆘 Troubleshooting
+2. **Supabase Connection Issues**
+   - Verify project URL and keys
+   - Check CORS settings in Supabase
+   - Ensure RLS policies are correct
 
-### **Common Issues**
-
-**Build Fails**
-- Check TypeScript errors
-- Verify all dependencies installed
-- Clear node_modules and reinstall
-
-**Database Connection Issues**
-- Verify environment variables
-- Check Supabase project status
-- Test API keys in Supabase dashboard
-
-**Application Errors**
-- Check browser console
-- Review network requests
-- Verify data structure matches types
+3. **Build Failures**
+   - Check Node.js version compatibility
+   - Clear npm cache: `npm cache clean --force`
+   - Delete `node_modules` and reinstall
 
 ## 📞 Support Resources
 
 - **Supabase**: [docs.supabase.com](https://docs.supabase.com)
+- **Netlify**: [docs.netlify.com](https://docs.netlify.com)
 - **Vite**: [vitejs.dev](https://vitejs.dev)
 - **React**: [reactjs.org](https://reactjs.org)
-- **TypeScript**: [typescriptlang.org](https://typescriptlang.org)
-- **TailwindCSS**: [tailwindcss.com](https://tailwindcss.com)
-
-## 🎯 Next Steps After Deployment
-
-1. **Monitor Performance**: Use analytics and monitoring tools
-2. **Gather Feedback**: Collect user feedback and iterate
-3. **Add Features**: Implement additional functionality
-4. **Scale**: Optimize for increased usage
-5. **Secure**: Regular security audits and updates
 
 ---
 
-**Ready to deploy?** Follow this checklist step by step, and your Benchmark School System will be running smoothly in production! 🚀
+**Ready to deploy?** Follow this guide step by step, and your Benchmark Club will be running smoothly in production! 🚀
