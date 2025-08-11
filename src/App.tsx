@@ -13,6 +13,7 @@ import ArticleDetail from './pages/ArticleDetail';
 import CreateArticle from './pages/CreateArticle';
 import AdminPanel from './pages/AdminPanel';
 import Confessions from './pages/Confessions';
+import Profile from './pages/Profile';
 
 function App() {
   const { loading } = useAuth();
@@ -22,7 +23,7 @@ function App() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading Benchmark School System...</p>
+          <p className="text-gray-600">Loading Benchmark Club...</p>
         </div>
       </div>
     );
@@ -54,14 +55,16 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            <Route 
-              path="/confessions" 
-              element={
-                <ProtectedRoute>
-                  <Confessions />
-                </ProtectedRoute>
-              } 
-            />
+            <Route path="/confessions" element={
+              <ProtectedRoute>
+                <Confessions />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
             <Route 
               path="/admin" 
               element={

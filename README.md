@@ -1,286 +1,183 @@
-# 🎓 Benchmark School System
+# Supabase CLI
 
-A modern, professional school management platform that brings together educators, students, and administrators in a comprehensive digital environment. Built with cutting-edge technologies for seamless learning and community engagement.
+[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=main)](https://coveralls.io/github/supabase/cli?branch=main) [![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/supabase-cli/setup-cli/master?style=flat-square&label=Bitbucket%20Canary)](https://bitbucket.org/supabase-cli/setup-cli/pipelines) [![Gitlab Pipeline Status](https://img.shields.io/gitlab/pipeline-status/sweatybridge%2Fsetup-cli?label=Gitlab%20Canary)
+](https://gitlab.com/sweatybridge/setup-cli/-/pipelines)
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![React](https://img.shields.io/badge/React-18.3.1-blue.svg)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-blue.svg)
-![Vite](https://img.shields.io/badge/Vite-5.4.2-purple.svg)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4.1-teal.svg)
+[Supabase](https://supabase.io) is an open source Firebase alternative. We're building the features of Firebase using enterprise-grade open source tools.
 
-## ✨ Features
+This repository contains all the functionality for Supabase CLI.
 
-### 🏠 **Modern Homepage**
-- **Gradient Hero Section** with professional animations
-- **Community Stats** showing platform engagement
-- **Featured Articles** with dynamic content loading
-- **Responsive Design** for all device types
+- [x] Running Supabase locally
+- [x] Managing database migrations
+- [x] Creating and deploying Supabase Functions
+- [x] Generating types directly from your database schema
+- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
 
-### 📊 **Professional Dashboard**
-- **Enhanced Analytics** with beautiful gradient cards
-- **Confessions Integration** with sidebar widget
-- **Article Management** with publish/draft controls
-- **Community Statistics** and engagement metrics
+## Getting started
 
-### 📝 **Article System**
-- **Rich Content Creation** with categories and tags
-- **Publication Management** with draft/publish workflow
-- **Comment System** for community engagement
-- **Author Attribution** and content moderation
+### Install the CLI
 
-### 💭 **Community Confessions**
-- **Anonymous Sharing** with privacy controls
-- **Community View** for all signed-in users
-- **Personal Management** with edit/delete permissions
-- **Beautiful UI** with gradient backgrounds
+Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
 
-### 🔐 **Authentication & Security**
-- **Invite-Only Registration** with code validation
-- **Role-Based Access** (Admin/User permissions)
-- **Protected Routes** with elegant access controls
-- **Hybrid Database** (Supabase + localStorage fallback)
-
-### 🗄️ **Database Integration**
-- **Supabase Integration** for production-ready online storage
-- **Automatic Fallback** to localStorage when offline
-- **Real-time Sync** between local and cloud data
-- **Professional Schema** with proper relationships and indexes
-
-### 🎨 **Professional Design**
-- **Modern Color Palette** with gradients and glass morphism
-- **Smooth Animations** and hover effects
-- **Consistent Typography** and spacing
-- **Mobile-First** responsive design
-
-## 🚀 Technology Stack
-
-### **Frontend**
-- **React 18.3.1** - Modern React with hooks
-- **TypeScript 5.5.3** - Type-safe development
-- **Vite 5.4.2** - Lightning-fast build tool
-- **React Router 7.8.0** - Client-side routing
-
-### **Styling**
-- **TailwindCSS 3.4.1** - Utility-first CSS framework
-- **Lucide React** - Beautiful icon library
-- **Custom Gradients** - Professional color schemes
-
-### **Development**
-- **ESLint** - Code quality and consistency
-- **TypeScript ESLint** - TypeScript-specific linting
-- **Hot Module Replacement** - Instant development feedback
-
-## 🛠️ Installation & Setup
-
-### **Prerequisites**
-- Node.js 18+ 
-- npm or yarn
-- Git
-
-### **Quick Start**
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Umairism/benchmark-school-system.git
-   cd benchmark-school-system
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure Database (Optional)**
-   
-   For **production** with online database:
-   ```bash
-   # Copy environment template
-   cp .env.example .env
-   
-   # Edit .env with your Supabase credentials
-   # See SUPABASE_SETUP.md for detailed instructions
-   ```
-   
-   For **development** (uses localStorage):
-   ```bash
-   # No configuration needed - works offline!
-   ```
-
-4. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Open in browser**
-   ```
-   http://localhost:5173
-   ```
-
-### **Build for Production**
 ```bash
-npm run build
-npm run preview
+npm i supabase --save-dev
 ```
 
-## 📋 Available Scripts
+To install the beta release channel:
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint checks |
-
-## 🎯 Usage Guide
-
-### **Getting Started**
-
-1. **Registration**
-   - Use invite code: `BENCHMARK2025`
-   - Fill in your details
-   - Automatic login after registration
-
-2. **Dashboard**
-   - View your articles and stats
-   - Quick access to confessions
-   - Community engagement metrics
-
-3. **Creating Content**
-   - Write and publish articles
-   - Share anonymous confessions
-   - Engage with community content
-
-### **Admin Features**
-- User management
-- Content moderation
-- System analytics
-- Community oversight
-
-## 🔧 Configuration
-
-### **Environment Variables**
-Create a `.env` file in the root directory:
-```env
-# Development settings
-VITE_APP_NAME="Benchmark School System"
-VITE_INVITE_CODE="BENCHMARK2025"
+```bash
+npm i supabase@beta --save-dev
 ```
 
-### **Database Setup**
-The application uses localStorage for development. For production, integrate with:
-- PostgreSQL with Supabase
-- MongoDB
-- Firebase
-- Your preferred database solution
-
-## 🏗️ Project Structure
+When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
 
 ```
-src/
-├── components/          # Reusable UI components
-│   ├── Articles/       # Article-related components
-│   ├── Auth/           # Authentication components
-│   ├── Debug/          # Development tools
-│   └── Layout/         # Layout components
-├── hooks/              # Custom React hooks
-│   └── useAuth.ts      # Authentication hook
-├── lib/                # Utility libraries
-│   ├── database.ts     # Hybrid database service
-│   └── supabase.ts     # Supabase client configuration
-├── pages/              # Route components
-│   ├── Home.tsx        # Landing page
-│   ├── Dashboard.tsx   # User dashboard
-│   ├── Confessions.tsx # Community confessions
-│   └── ...
-├── types/              # TypeScript type definitions
-│   ├── index.ts        # Core type definitions
-│   └── supabase.ts     # Supabase database types
-└── utils/              # Utility functions
-
-supabase/
-└── schema.sql          # Database schema for Supabase
-
-docs/
-├── SUPABASE_SETUP.md   # Supabase configuration guide
-└── GITHUB_SETUP.md     # GitHub deployment guide
+NODE_OPTIONS=--no-experimental-fetch yarn add supabase
 ```
 
-## 🎨 Design System
+> **Note**
+For Bun versions below v1.0.17, you must add `supabase` as a [trusted dependency](https://bun.sh/guides/install/trusted) before running `bun add -D supabase`.
 
-### **Color Palette**
-- **Primary**: Blue (600-700) and Purple (600-700)
-- **Accents**: Yellow/Amber (300-400) and Emerald (500-600)
-- **Neutrals**: Slate (50-800) for backgrounds and text
-- **Gradients**: Multi-stop gradients for visual depth
+<details>
+  <summary><b>macOS</b></summary>
 
-### **Components**
-- **Cards**: Glass morphism with backdrop blur
-- **Buttons**: Gradient backgrounds with hover effects
-- **Forms**: Clean, accessible input design
-- **Navigation**: Smooth transitions and highlighting
+  Available via [Homebrew](https://brew.sh). To install:
 
-## 🤝 Contributing
+  ```sh
+  brew install supabase/tap/supabase
+  ```
 
-1. **Fork the repository**
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. **Commit your changes**
-   ```bash
-   git commit -m 'Add amazing feature'
-   ```
-4. **Push to the branch**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-5. **Open a Pull Request**
+  To install the beta release channel:
+  
+  ```sh
+  brew install supabase/tap/supabase-beta
+  brew link --overwrite supabase-beta
+  ```
+  
+  To upgrade:
 
-## 📊 Performance
+  ```sh
+  brew upgrade supabase
+  ```
+</details>
 
-- **Lighthouse Score**: 95+ (Performance, Accessibility, Best Practices)
-- **Bundle Size**: Optimized with Vite
-- **Loading Time**: < 2s initial load
-- **Mobile Performance**: Optimized for all devices
+<details>
+  <summary><b>Windows</b></summary>
 
-## 🔒 Security Features
+  Available via [Scoop](https://scoop.sh). To install:
 
-- **Input Validation**: Comprehensive form validation
-- **Access Control**: Role-based permissions
-- **Data Protection**: Secure local storage handling
-- **Authentication**: Invite-code protected registration
+  ```powershell
+  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+  scoop install supabase
+  ```
 
-## 📱 Browser Support
+  To upgrade:
 
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
+  ```powershell
+  scoop update supabase
+  ```
+</details>
 
-## 📄 License
+<details>
+  <summary><b>Linux</b></summary>
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+  Available via [Homebrew](https://brew.sh) and Linux packages.
 
-## 👥 Team
+  #### via Homebrew
 
-- **Frontend**: React + TypeScript + TailwindCSS
-- **Design**: Modern UI/UX with professional gradients
-- **Architecture**: Component-based with hooks
-- **Database**: Local storage with migration-ready structure
+  To install:
 
-## 🙏 Acknowledgments
+  ```sh
+  brew install supabase/tap/supabase
+  ```
 
-- **React Team** for the amazing framework
-- **Vite Team** for the blazing fast build tool
-- **TailwindCSS** for the utility-first approach
-- **Lucide** for the beautiful icons
+  To upgrade:
 
-## 📞 Support
+  ```sh
+  brew upgrade supabase
+  ```
 
-For support, email support@benchmark-school.com or join our Discord community.
+  #### via Linux packages
 
----
+  Linux packages are provided in [Releases](https://github.com/supabase/cli/releases). To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your package manager and run the respective commands.
 
-<div align="center">
-  <strong>🎓 Built with ❤️ for educational excellence</strong>
-</div>
+  ```sh
+  sudo apk add --allow-untrusted <...>.apk
+  ```
+
+  ```sh
+  sudo dpkg -i <...>.deb
+  ```
+
+  ```sh
+  sudo rpm -i <...>.rpm
+  ```
+
+  ```sh
+  sudo pacman -U <...>.pkg.tar.zst
+  ```
+</details>
+
+<details>
+  <summary><b>Other Platforms</b></summary>
+
+  You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
+
+  ```sh
+  go install github.com/supabase/cli@latest
+  ```
+
+  Add a symlink to the binary in `$PATH` for easier access:
+
+  ```sh
+  ln -s "$(go env GOPATH)/bin/cli" /usr/bin/supabase
+  ```
+
+  This works on other non-standard Linux distros.
+</details>
+
+<details>
+  <summary><b>Community Maintained Packages</b></summary>
+
+  Available via [pkgx](https://pkgx.sh/). Package script [here](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
+  To install in your working directory:
+
+  ```bash
+  pkgx install supabase
+  ```
+
+  Available via [Nixpkgs](https://nixos.org/). Package script [here](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
+</details>
+
+### Run the CLI
+
+```bash
+supabase bootstrap
+```
+
+Or using npx:
+
+```bash
+npx supabase bootstrap
+```
+
+The bootstrap command will guide you through the process of setting up a Supabase project using one of the [starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json) templates.
+
+## Docs
+
+Command & config reference can be found [here](https://supabase.com/docs/reference/cli/about).
+
+## Breaking changes
+
+We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
+
+However, due to dependencies on other service images, we cannot guarantee that schema migrations, seed.sql, and generated types will always work for the same CLI major version. If you need such guarantees, we encourage you to pin a specific version of CLI in package.json.
+
+## Developing
+
+To run from source:
+
+```sh
+# Go >= 1.22
+go run . help
+```

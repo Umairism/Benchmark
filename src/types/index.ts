@@ -3,6 +3,12 @@ export interface User {
   email: string;
   full_name?: string;
   role: 'admin' | 'user';
+  faculty?: string;
+  profile_picture?: string;
+  bio?: string;
+  likes?: string[];
+  dislikes?: string[];
+  interests?: string[];
   created_at: string;
   updated_at: string;
 }

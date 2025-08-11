@@ -65,7 +65,7 @@ const Home: React.FC = () => {
               <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
                 Welcome to
                 <span className="block bg-gradient-to-r from-yellow-400 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
-                  Benchmark School System
+                  Benchmark Club
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-4xl mx-auto leading-relaxed">

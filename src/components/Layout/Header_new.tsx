@@ -19,7 +19,7 @@ const Header: React.FC = () => {
           <Link to="/" className="flex items-center space-x-3">
             <BookOpen className="h-8 w-8 text-blue-600" />
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Benchmark School System</h1>
+              <h1 className="text-xl font-bold text-gray-900">Benchmark Club</h1>
               <p className="text-xs text-gray-600">Knowledge • Excellence • Innovation</p>
             </div>
           </Link>
